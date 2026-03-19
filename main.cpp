@@ -92,10 +92,21 @@ private:
     int doctorCounter;
 
 public:
-    Hospital();
+    Hospital(){
+    patientCounter = 0;
+    doctorCounter = 0;
+}
 
     int registerPatient(string name, int age, string contact);
-    int addDoctor(string name, Department dept);
+    int addDoctor(string name, Department dept) {
+    doctorCounter++;  // generate new ID
+
+    doctors.emplace_back(doctorCounter, name, dept);
+
+    cout << "Doctor added successfully. ID: " << doctorCounter << endl;
+
+    return doctorCounter;
+}
     void admitPatient(int patientId, RoomType type);
     void addEmergency(int patientId);
     int handleEmergency();
