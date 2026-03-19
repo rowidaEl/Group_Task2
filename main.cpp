@@ -60,8 +60,22 @@ private:
 public:
     Doctor(int did, string n, Department d);
 
-    void addAppointment(int patientId);
-    int seePatient();
+    void addAppointment(int patientId) {
+    appointmentQueue.push(patientId);
+    cout << "Appointment added for patient ID: " << patientId << endl;
+}
+    int seePatient(){
+    if (appointmentQueue.empty()) {
+        cout << "No patients in appointment queue." << endl;
+        return -1; // indicates no patient
+    }
+
+    int nextPatient = appointmentQueue.front();
+    appointmentQueue.pop();
+
+    cout << "Doctor is seeing patient ID: " << nextPatient << endl;
+    return nextPatient;
+}
 
     int getId();
     string getName();
