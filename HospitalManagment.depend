@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1774134197 source:c:\users\rowida\desktop\grouptask\group_task2\hospitalmanagment\main.cpp
+	<iostream>
+	<string>
+	<vector>
+	<stack>
+	<queue>
+
