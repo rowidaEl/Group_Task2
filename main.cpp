@@ -234,7 +234,7 @@ public:
     patientCounter = 0;
     doctorCounter = 0;
 }
-        //FIX FORMAT
+        
     int registerPatient(string name, int age, string contact) {
         if (name.empty() || age <= 0 || age > 150 || contact.empty()) {
             cerr << "Invalid patient data.\n";
