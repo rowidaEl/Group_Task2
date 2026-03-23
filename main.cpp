@@ -95,10 +95,8 @@ public:
 
     }
 
-    void admitPatient(RoomType type);
-    void dischargePatient();
-    void addMedicalRecord(string record);
-    void requestTest(string testName);
+
+
     string performTest()
     {
         if(testQueue.empty())
@@ -177,7 +175,7 @@ public:
     int seePatient(){
     if (appointmentQueue.empty()) {
         cout << "No patients in appointment queue." << endl;
-        return -1; // indicates no patient
+        return -1;
     }
 
     int nextPatient = appointmentQueue.front();
@@ -216,10 +214,6 @@ public:
         default:
             return "Unknown";
 
-
-
-
-
         }
 
     }
@@ -240,54 +234,131 @@ public:
     patientCounter = 0;
     doctorCounter = 0;
 }
-
+        
     int registerPatient(string name, int age, string contact) {
         if (name.empty() || age <= 0 || age > 150 || contact.empty()) {
-            cerr << "[ERROR] Invalid patient data.\n";
+            cerr << "Invalid patient data.\n";
             return -1;
         }
 
         int newId = patientCounter++;
         patients.push_back(Patient(newId, name, age, contact));
-        cout << "[SUCCESS] Registered: " << name << " (ID: " << newId << ")\n";
+        cout << "Registered: " << name << " (ID: " << newId << ")\n";
         return newId;
     }
 
-    int addDoctor(string name, Department dept);
+
+        int addDoctor(string name, Department dept) {
+        doctorCounter++;
+
+    doctors.emplace_back(doctorCounter, name, dept);
+
+    cout << "Doctor added :Dr. " << name << "(ID: " << doctorCounter << ") -" << doctors[doctorCounter-1].getDepartment() << endl;
+
+    return doctorCounter;
+
+    }
 
     void admitPatient(int patientId, RoomType type) {
         for (auto& p : patients) {
             if (p.getId() == patientId) {
                 if (p.getAdmissionStatus()) {
-                    cout << "[WARNING] Patient " << patientId << " is already admitted.\n";
+                    cout << "Patient " << patientId << " is already admitted.\n";
                     return;
                 }
                 p.admitPatient(type);
-                cout << "[SUCCESS] Patient " << p.getName() << " admitted.\n";
+
                 return;
             }
         }
-        cerr << "[ERROR] Patient ID " << patientId << " not found.\n";
+        cerr << "Patient ID " << patientId << " not found.\n";
     }
 
     void addEmergency(int patientId) {
         for (auto& p : patients) {
             if (p.getId() == patientId) {
                 emergencyQueue.push(patientId);
-                cout << "[SUCCESS] " << p.getName() << " added to emergency queue.\n";
                 return;
             }
         }
         cerr << "[ERROR] Patient ID " << patientId << " not found.\n";
     }
 
-    int handleEmergency();
+  int handleEmergency() {
+    if (emergencyQueue.empty()) {
+        cout << "No emergencies to handle at the moment." << endl;
+        return -1;
+    }
 
-    void bookAppointment(int doctorId, int patientId);
+    int patientId = emergencyQueue.front();
+    emergencyQueue.pop();
 
-    void displayPatientInfo(int patientId);
+    cout << "Handling emergency for Patient ID: " << patientId << endl;
+    return patientId;
+}
 
-    void displayDoctorInfo(int doctorId);
+void bookAppointment(int doctorId, int patientId) {
+    bool patientExists = false;
+    bool doctorExists = false;
+    Doctor* targetDoctor = nullptr;
+
+    for (int i = 0; i < patients.size(); i++) {
+        if (patients[i].getId() == patientId) {
+            patientExists = true;
+            break;
+        }
+    }
+
+    for (int i = 0; i < doctors.size(); i++) {
+        if (doctors[i].getId() == doctorId) {
+            doctorExists = true;
+            targetDoctor = &doctors[i];
+            break;
+        }
+    }
+
+    if (!patientExists) {
+        cout << "Error: Patient with ID " << patientId << " not found." << endl;
+    }
+    if (!doctorExists) {
+        cout << "Error: Doctor with ID " << doctorId << " not found." << endl;
+    }
+
+    if (patientExists && doctorExists && targetDoctor != nullptr) {
+        targetDoctor->addAppointment(patientId);
+        cout << "Appointment booked successfully for Patient ID " << patientId
+             << " with Doctor ID " << doctorId << "." << endl;
+    }
+}
+
+void displayPatientInfo(int patientId) {
+    for (int i = 0; i < patients.size(); i++) {
+        if (patients[i].getId() == patientId) {
+            cout << "\n--- Patient Information ---" << endl;
+            cout << "Patient ID: " << patients[i].getId() << endl;
+            cout << "Name: " << patients[i].getName() << endl;
+            cout << "Admission Status: " << (patients[i].getAdmissionStatus() ? "Admitted" : "Not Admitted") << endl;
+            cout << "---------------------------" << endl;
+            return;
+        }
+    }
+    cout << "Error: Cannot display info. Patient with ID " << patientId << " not found." << endl;
+}
+
+void displayDoctorInfo(int doctorId) {
+    for (int i = 0; i < doctors.size(); i++) {
+        if (doctors[i].getId() == doctorId) {
+            cout << "\n--- Doctor Information ---" << endl;
+            cout << "Doctor ID: " << doctors[i].getId() << endl;
+            cout << "Name: " << doctors[i].getName() << endl;
+            cout << "Department: " << doctors[i].getDepartment() << endl;
+            cout << "--------------------------" << endl;
+            return;
+        }
+    }
+    cout << "Error: Cannot display info. Doctor with ID " << doctorId << " not found." << endl;
+}
+
 
 };
 
