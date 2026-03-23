@@ -80,14 +80,54 @@ private:
 public:
     Hospital();
 
-    int registerPatient(string name, int age, string contact);
+    int registerPatient(string name, int age, string contact) {
+        if (name.empty() || age <= 0 || age > 150 || contact.empty()) {
+            cerr << "[ERROR] Invalid patient data.\n";
+            return -1;
+        }
+
+        int newId = patientCounter++;
+        patients.push_back(Patient(newId, name, age, contact));
+        cout << "[SUCCESS] Registered: " << name << " (ID: " << newId << ")\n";
+        return newId;
+    }
+
     int addDoctor(string name, Department dept);
-    void admitPatient(int patientId, RoomType type);
-    void addEmergency(int patientId);
+
+    void admitPatient(int patientId, RoomType type) {
+        for (auto& p : patients) {
+            if (p.getId() == patientId) {
+                if (p.getAdmissionStatus()) {
+                    cout << "[WARNING] Patient " << patientId << " is already admitted.\n";
+                    return;
+                }
+                p.admitPatient(type);
+                cout << "[SUCCESS] Patient " << p.getName() << " admitted.\n";
+                return;
+            }
+        }
+        cerr << "[ERROR] Patient ID " << patientId << " not found.\n";
+    }
+
+    void addEmergency(int patientId) {
+        for (auto& p : patients) {
+            if (p.getId() == patientId) {
+                emergencyQueue.push(patientId);
+                cout << "[SUCCESS] " << p.getName() << " added to emergency queue.\n";
+                return;
+            }
+        }
+        cerr << "[ERROR] Patient ID " << patientId << " not found.\n";
+    }
+
     int handleEmergency();
+
     void bookAppointment(int doctorId, int patientId);
+
     void displayPatientInfo(int patientId);
+
     void displayDoctorInfo(int doctorId);
+
 };
 
 // ========== MAIN PROGRAM ========== //
