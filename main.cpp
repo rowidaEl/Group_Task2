@@ -35,18 +35,81 @@ private:
     RoomType roomType;
 
 public:
-    Patient(int pid, string n, int a, string c);
+    Patient(int pid, string n, int a, string c){
+    id = pid;
+    name = n;
+    age = a;
+    contact = c;
+    isAdmitted = false;
+    }
 
-    void admitPatient(RoomType type);
-    void dischargePatient();
-    void addMedicalRecord(string record);
-    void requestTest(string testName);
+
+    void admitPatient(RoomType type)
+    {
+
+
+        if(isAdmitted)
+        {
+            cout << "Patient " << name << " is already admitted" << endl ;
+            return;
+        }
+        isAdmitted = true;
+        roomType = type;
+         string patientRoom;
+        switch(roomType)
+        {
+            case GENERAL_WARD : patientRoom = "General Ward"; break;
+            case ICU : patientRoom = "ICU"; break;
+            case PRIVATE_ROOM : patientRoom = "Private Room"; break;
+            case SEMI_PRIVATE : patientRoom = "Semi-Private Room";break;
+        }
+        cout << "Patient " << name << " is admitted to " << patientRoom << endl;
+    }
+
+
+    void dischargePatient()
+    {
+        if(!isAdmitted)
+        {
+            cout << "Patient " << name << " is not currently admitted" << endl;
+            return;
+        }
+        isAdmitted = false ;
+        cout << "Patient " << name << " has been discharged" << endl;
+
+    }
+
+    void addMedicalRecord(string record)
+    {
+        medicalHistory.push(record);
+        cout << "Medical Record added for " << name << ": " << record << endl;
+    }
+
+    void requestTest(string testName)
+    {
+        testQueue.push(testName);
+        cout << "Test requested for " << name << ": " << testName << endl;
+
+    }
+
     string performTest();
     void displayHistory();
 
-    int getId();
-    string getName();
-    bool getAdmissionStatus();
+
+    int getId()
+    {
+        return id;
+    }
+
+
+    string getName()
+    {
+        return name;
+    }
+    bool getAdmissionStatus()
+    {
+        return isAdmitted;
+    }
 };
 
 // ========== DOCTOR CLASS ========== //
